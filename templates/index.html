@@ -14,35 +14,32 @@
       <h3>Farm</h3>
       <p>(earns 10-20 golds)</p>
       <form action="/process_money" method="post">
-        <input type="submit" value="Find Gold!">
-        <input type="hidden" name="which_action" value="farm">
+        <button type="submit" name="location" value="farm"> Find Gold!</button>
       </form>
     </div>
     <div class="boxes">
       <h3>Cave</h3>
       <p>(earns 5-10 golds)</p>
       <form action="/process_money" method="post">
-        <input type="submit" value="Find Gold!">
-        <input type="hidden" name="which_action" value="cave">
+        <button type="submit" name="location" value="cave"> Find Gold!</button>
       </form>
     </div>
     <div class="boxes">
       <h3>House</h3>
       <p>(earns 2-5 golds)</p>
       <form action="/process_money" method="post">
-        <input type="submit" value="Find Gold!">
-        <input type="hidden" name="which_action" value="house">
+        <button type="submit" name="location" value="house"> Find Gold!</button>
       </form>
     </div>
     <div class="boxes">
       <h3>Casino</h3>
       <p>(earns/takes 0-50 golds)</p>
       <form action="/process_money" method="post">
-        <input type="submit" value="Find Gold!">
-        <input type="hidden" name="which_action" value="casino">
+        <button type="submit" name="location" value="casino"> Find Gold!</button>
       </form>
     </div>
   </div>
+  <p class="spacing">Number of moves left: {{moves}}</p>
   <p class="spacing">Activities:</p>
   <div id="acitivies">
     {%for activity in activities|reverse%}
@@ -50,7 +47,7 @@
     {%endfor%}
   </div>
   <form action="/reset" method="POST">
-    <input type="submit" value="Reset">
+    <input type="submit" value="Reset" style="display:{{display}}">
   </form>
 </body>
 </html>

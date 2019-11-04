@@ -5,46 +5,49 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'A secret makes a woman woman'
 
-activities = []
 
 @app.route('/')
 def index():
-    return render_template("index.html", gold_amt=session['gold_amt'], activities = activities)
+    if 'activities' not in session:
+        session['activities'] = []
+    if 'gold_amt' not in session:
+        session['gold_amt'] = 0
+    if 'moves' not in session:
+        session['moves'] = 15
+    if 'display' not in session:
+        session['display'] = 'none'
+    return render_template("index.html", gold_amt=session['gold_amt'], activities=session['activities'], moves=session['moves'], display=session['display'])
 
 @app.route('/process_money', methods=['POST'])
 def process_money():
     dt_string = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-    # Farm
-    if request.form['which_action'] == "farm":
-        add_gold_farm = random.randint(10, 20)
-        session['gold_amt'] += add_gold_farm
-        activities.append(f"<p style='color: green'>Earned {add_gold_farm} from the farm! ({dt_string}) </p>")
-    # Cave
-    elif request.form['which_action'] == "cave":
-        add_gold_cave = random.randint(5, 10)
-        session['gold_amt'] += add_gold_cave
-        activities.append(f"<p style='color: green'>Earned {add_gold_cave} from the cave! ({dt_string}) </p>")
-    # House
-    elif request.form['which_action'] == "house":
-        add_gold_house = random.randint(2, 5)
-        session['gold_amt'] += add_gold_house
-        activities.append(f"<p style='color: green'>Earned {add_gold_house} from the house! ({dt_string})</p>")
-    # Casino
-    elif request.form['which_action'] == "casino":
-        add_gold_casino = random.randint(-50, 50)
-        session['gold_amt'] += add_gold_casino
-        if add_gold_casino < 0:
-            activities.append(f"<p style='color: red'>Earned {add_gold_casino} from the casino! ({dt_string}) </p>")
-        else:
-            activities.append(f"<p style='color: green'>Earned {add_gold_casino} from the casino! ({dt_string}) </p>")
+    gold_generator = {
+        'farm': random.randint(10, 20),
+        'cave': random.randint(5, 10),
+        'house': random.randint(2, 5),
+        'casino': random.randint(-50, 50),
+    }
+    location = request.form["location"]
+    session['gold_amt'] += gold_generator[location]
+
+    if gold_generator[location] < 0:
+        session['activities'].append(
+            f"<p style='color: red'> Earned {gold_generator[location]} from the {location}! ({dt_string}) </p>")
+    else:
+        session['activities'].append(
+            f"<p style='color: green'> Earned {gold_generator[location]} from the {location}! ({dt_string}) </p>")
+
+        session['moves'] -= 1
+        if session['moves'] == 0 or session['gold_amt'] >= 500:
+            session['display'] = 'inline-block'
     return redirect("/")
+
 
 @app.route('/reset', methods=['POST'])
 def reset():
-  activities.clear()
-  session['gold_amt'] = 0
-  session['moves'] = 0
-  return redirect('/')
+    session.clear()
+    return redirect('/')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
